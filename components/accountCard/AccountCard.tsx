@@ -23,6 +23,7 @@ export interface IAccountCard {
   id: string;
   editable?: boolean;
   setIsProfileModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onAddProfile?: () => void;
 }
 
 const AccountCard: React.FC<IAccountCard> = ({
@@ -30,19 +31,26 @@ const AccountCard: React.FC<IAccountCard> = ({
   editable,
   id,
   setIsProfileModalOpen,
+  onAddProfile,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [integrations, setIntegrations] = useState<IProfile[]>([]);
 
   useEffect(() => {
     setIntegrations(profiles);
-  }, []);
+  }, [profiles]);
+
+  const handleAddProfile = () => {
+    if (onAddProfile) {
+      onAddProfile();
+    }
+  };
 
   return (
     <Card>
       <div className={styles["card"]}>
         {integrations.map((item, index) => (
-          <Button key='k1' onClick={() => setIsProfileModalOpen(true)}>
+          <Button key={item.id} onClick={() => setIsProfileModalOpen(item)}>
             <Avatar alt={item.username} src={item.avatar} />
             {item.username}
           </Button>
@@ -55,7 +63,7 @@ const AccountCard: React.FC<IAccountCard> = ({
         )}
         {!editable && (
           <div className={styles["empty-accounts"]}>
-            <Button >
+            <Button onClick={handleAddProfile} >
               <span className={styles["link"]}>Add a new Profile</span>
             </Button>
           </div>

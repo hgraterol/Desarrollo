@@ -6,6 +6,7 @@ import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import AccountCard from "@/components/accountCard/AccountCard";
 import { useState } from "react";
+import Square from "@/components/square/Square";
 
 type IPlatform = "facebook" | "instagram" | "linkedin";
 
@@ -70,66 +71,65 @@ const Interview = ({ props }) => {
 
   const [profiles, setProfiles] = useState([profile1, profile2]);
 
+  const handleAddProfile = () => {
+    const newProfile: IProfile = {
+      id: `id-${profiles.length + 1}`,
+      avatar: "/pictures/cat-face-1.jpg", 
+      platform: "facebook",
+      username: "New Profile", 
+      tastes: [
+        {
+          title: "Favorites 1",
+          elements: ["Bailar", "Nadar", "Correr"],
+        },
+      ], 
+    };   
+
+    setProfiles([...profiles, newProfile]);
+  };
+
+  
+
+  const [selectedProfile, setSelectedProfile] = useState<IProfile | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const handleOpenProfileModal = (profile: IProfile) => {
+    setSelectedProfile(profile);
+    setIsProfileModalOpen(true);
+  };
+
+  const [boxes, setBoxes] = useState([
+    { id: 1, backgroundColor: "secondary.dark", hoverBackgroundColor: "secondary.main" },
+    { id: 2, backgroundColor: "primary.dark", hoverBackgroundColor: "primary.main" },
+    { id: 3, backgroundColor: "success.dark", hoverBackgroundColor: "success.main" },
+  ]);
+
+  const deleteBox = (boxId) => {
+    const updatedBoxes = boxes.filter((box) => box.id !== boxId);
+    setBoxes(updatedBoxes);
+  };
 
   return (
     <div className={styles["interview-main-container"]}>
-      <div className={styles["interview-boxes-container"]}>
-        <div className={styles["interview-box-container"]}>
-          <Box
-            sx={{
-              width: 300,
-              height: 300,
-              backgroundColor: "secondary.dark",
-              "&:hover": {
-                backgroundColor: "secondary.main",
-                opacity: [0.9, 0.8, 0.7],
-              },
-            }}
+     <div className={styles["interview-boxes-container"]}>
+     {boxes.map((box) => (
+          <Square
+            key={box.id}
+            backgroundColor={box.backgroundColor}
+            hoverBackgroundColor={box.hoverBackgroundColor}
+            deleteSquare={() => deleteBox(box.id)}
           />
-          <Button variant="contained" startIcon={<CloseIcon />}>
-            Delete
-          </Button>
-        </div>
-        <div className={styles["interview-box-container"]}>
-          <Box
-            sx={{
-              width: 300,
-              height: 300,
-              backgroundColor: "primary.dark",
-              "&:hover": {
-                backgroundColor: "primary.main",
-                opacity: [0.9, 0.8, 0.7],
-              },
-            }}
-          />
-          <Button variant="contained" startIcon={<CloseIcon />}>
-            Delete
-          </Button>
-        </div>
-        <div className={styles["interview-box-container"]}>
-          <Box
-            sx={{
-              width: 300,
-              height: 300,
-              backgroundColor: "success.dark",
-              "&:hover": {
-                backgroundColor: "success.main",
-                opacity: [0.9, 0.8, 0.7],
-              },
-            }}
-          />
-          <Button variant="contained" startIcon={<CloseIcon />}>
-            Delete
-          </Button>
-        </div>
-      </div>
+        ))}
+
+
+      </div> 
       <div>
         <AccountCard
           profiles={profiles}
           editable={false}
           id="id-x-1"
-          setIsProfileModalOpen={setIsProfileModalOpen}
+          setIsProfileModalOpen={handleOpenProfileModal}
+          onAddProfile={handleAddProfile}
         />
       </div>
       <Modal
@@ -140,10 +140,13 @@ const Interview = ({ props }) => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Title
+             Name:{selectedProfile?.username }
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Body
+             Tastes: 
+             {selectedProfile?.tastes?.map((taste, index) => (    
+                <div key={index}>{taste.elements.join(' ')}</div>
+              ))} 
           </Typography>
         </Box>
       </Modal>

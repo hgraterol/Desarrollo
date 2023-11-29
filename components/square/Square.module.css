@@ -1,0 +1,9 @@
+.interview-boxes-container{
+    display: inline-flex;
+    gap: 30px
+  }
+  
+  .interview-box-container{
+    display: block;
+    gap: 30px;
+  }
